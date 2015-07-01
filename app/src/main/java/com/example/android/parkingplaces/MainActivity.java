@@ -114,32 +114,32 @@ public class MainActivity extends ActionBarActivity implements
         home = new MarkerOptions()
                 .position(new LatLng(24.938486, 121.503394))
                 .title("Home")
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher));
+                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
 
         oldHome = new MarkerOptions()
                 .position(new LatLng(25.028104, 121.499944))
                 .title("Old Home")
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher));
+                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
 
         building101 = new MarkerOptions()
                 .position(new LatLng(25.033720, 121.564811))
                 .title("101")
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher));
+                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
 
         trueYoga = new MarkerOptions()
                 .position(new LatLng(25.041626, 121.564047))
                 .title("True Yoga")
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher));
+                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
 
         taishinBank = new MarkerOptions()
                 .position(new LatLng(25.037573, 121.550077))
                 .title("Taishin Bank")
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher));
+                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
 
         homeTom = new MarkerOptions()
                 .position(new LatLng(25.073208, 121.469505))
                 .title("Hometom")
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher));
+                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
 
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
