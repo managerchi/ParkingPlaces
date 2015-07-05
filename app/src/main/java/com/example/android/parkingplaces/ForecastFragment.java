@@ -32,6 +32,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -47,10 +51,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+
+
 /**
  * Encapsulates fetching the forecast and displaying it as a {@link ListView} layout.
  */
 public class ForecastFragment extends Fragment {
+
+    ClassicSingleton CS= new ClassicSingleton().getInstance();
 
     private ArrayAdapter<String> mForecastAdapter;
 
@@ -75,11 +83,31 @@ public class ForecastFragment extends Fragment {
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
-        if (id == R.id.action_refresh) {
+        if (id == R.id.action_24TPS) {
             FetchWeatherTask weatherTask = new FetchWeatherTask();
-            weatherTask.execute("94043");
-            return true;
+            weatherTask.execute("https://dl.dropboxusercontent.com/u/46823822/24TPS.json");
+            //return true;
         }
+        else if (id == R.id.action_DoDoHome) {
+            FetchWeatherTask weatherTask = new FetchWeatherTask();
+            weatherTask.execute("https://dl.dropboxusercontent.com/u/46823822/DoDoHome.json");
+            //return true;
+        }
+        else if (id == R.id.action_TaiwanParking) {
+            FetchWeatherTask weatherTask = new FetchWeatherTask();
+            weatherTask.execute("https://dl.dropboxusercontent.com/u/46823822/TaiwanParking.json");
+           // return true;
+        }
+
+
+        CameraPosition LAST = CameraPosition.builder()
+                .target(new LatLng(MainActivity.latitude, MainActivity.longitude))
+                .zoom(12)
+                .bearing(0)
+                .tilt(90)
+                .build();
+        MainActivity.m_map.moveCamera(CameraUpdateFactory.newCameraPosition(LAST));
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -114,6 +142,8 @@ public class ForecastFragment extends Fragment {
         // Get a reference to the ListView, and attach this adapter to it.
         ListView listView = (ListView) rootView.findViewById(R.id.listview_forecast);
         listView.setAdapter(mForecastAdapter);
+
+
 
         return rootView;
     }
@@ -161,31 +191,44 @@ public class ForecastFragment extends Fragment {
             final String LATITUDE = "latitude";
             final String LONGITUDE = "longitude";
             final String STATIONS = "stations";
+            Integer i;
 
             Log.e(LOG_TAG, companyJsonStr);
+
+            //ClassicSingleton CS= new ClassicSingleton().getInstance();
+            CS.stations = 0;
 
             JSONObject stationsJson = new JSONObject(companyJsonStr);
             JSONArray stationArray = stationsJson.getJSONArray(STATIONS);
 
-            for(int i = 0; i < stationArray.length(); i++) {
+            for(i = 0; i < stationArray.length(); i++) {
                 JSONObject stationJson = stationArray.getJSONObject(i);
-
-                //JSONArray addressArray = resultJson.getJSONArray(ADDRESS_COMPONENTS);
-
-                //JSONObject geometryJson = resultJson.getJSONObject(GEOMETRY);
-                //JSONObject locationCoord = geometryJson.getJSONObject(LOCATION);
                 String name = stationJson.getString(NAME);
                 String address = stationJson.getString(ADDRESS);
                 double latitude = stationJson.getDouble(LATITUDE);
                 double longitude = stationJson.getDouble(LONGITUDE);
 
+                if (latitude != 0.0 &&
+                        longitude != 0.0) {
+                    CS.name.add(name);
+                    CS.address.add(address);
+                    CS.latitude.add(latitude);
+                    CS.longitude.add(longitude);
+
+                    CS.stations++;
+                }
+
                 resultStrs[i] = (i+1)+"<"+name+"><"+address+">("+latitude+","+longitude+")";
                 Log.e(LOG_TAG, resultStrs[i]);
             } // i
 
+            Log.e(LOG_TAG, "CS.stations="+CS.stations);
+
             //for (String s : resultStrs) {
             //    Log.e(LOG_TAG, "Station: " + s);
             //}
+
+
 
             return resultStrs;
 
@@ -230,7 +273,9 @@ public class ForecastFragment extends Fragment {
                         .build();
 
                 //URL url = new URL(builtUri.toString());
-                URL url = new URL("https://dl.dropboxusercontent.com/u/46823822/24TPS.json");
+
+                //URL url = new URL("https://dl.dropboxusercontent.com/u/46823822/24TPS.json");
+                URL url = new URL(params[0]);
 
                 Log.v(LOG_TAG, "Built URI " + builtUri.toString());
 
@@ -283,6 +328,9 @@ public class ForecastFragment extends Fragment {
 
             try {
                 return getWeatherDataFromJson(forecastJsonStr);
+
+
+
             } catch (JSONException e) {
                 Log.e(LOG_TAG, e.getMessage(), e);
                 e.printStackTrace();
@@ -293,3 +341,6 @@ public class ForecastFragment extends Fragment {
         }
     }
 }
+
+
+

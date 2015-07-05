@@ -37,7 +37,7 @@ public class MainActivity extends ActionBarActivity implements
         OnConnectionFailedListener {
 
 
-    protected static final String TAG = "basic-location-sample";
+    private final String TAG = MainActivity.class.getSimpleName();
 
     /**
      * Provides the entry point to Google Play services.
@@ -55,7 +55,7 @@ public class MainActivity extends ActionBarActivity implements
     protected TextView mLongitudeText;
 
 
-    GoogleMap m_map;
+    static public GoogleMap m_map;
     boolean mapReady = false;
 
 
@@ -67,6 +67,8 @@ public class MainActivity extends ActionBarActivity implements
     MarkerOptions taishinBank;
     MarkerOptions homeTom;
 
+    MarkerOptions station;
+
 
     LatLng homeLL = new LatLng(24.938486, 121.503394);
     LatLng oldHomeLL = new LatLng(25.028104, 121.499944);
@@ -77,8 +79,8 @@ public class MainActivity extends ActionBarActivity implements
 
 
 
-    double latitude;
-    double longitude;
+    static public double latitude;
+    static public double longitude;
     //LatLng lastLL = new LatLng(latitude, longitude);
     LatLng lastLL;
     CameraPosition LAST;
@@ -97,7 +99,7 @@ public class MainActivity extends ActionBarActivity implements
             .tilt(45)
             .build();
 
-
+    ClassicSingleton CS= new ClassicSingleton().getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -114,8 +116,6 @@ public class MainActivity extends ActionBarActivity implements
         //mLongitudeText = (TextView) findViewById((R.id.longitude_text));
 
         buildGoogleApiClient();
-
-
 
 
 
@@ -208,19 +208,27 @@ public class MainActivity extends ActionBarActivity implements
                     .title("Home")
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher));
 
-            lastLL = new LatLng(latitude, longitude);
-
             m_map.addMarker(last);
 
-            m_map.addPolyline(new PolylineOptions().geodesic(true)
-                            .add(lastLL)
-                            .add(homeLL)
+            lastLL = new LatLng(latitude, longitude);
+
+            Integer i;
+
+
+            for (i = 0; i < CS.stations; i++) {
+                Log.e(TAG, (i+1)+"<"+CS.Name().get(i)+"><"+CS.Address().get(i)+">("+CS.Latitude().get(i)+CS.Longitude().get(i)+")");
+            }
+
+
+//            m_map.addPolyline(new PolylineOptions().geodesic(true)
+//                            .add(lastLL)
+//                            .add(homeLL)
 //                        .add(oldHomeLL)
 //                        .add(homeTomLL)
-                            .add(taishinBankLL)
-                            .add(trueYogaLL)
-                            .add(homeLL)
-            );
+//                            .add(taishinBankLL)
+//                            .add(trueYogaLL)
+//                            .add(homeLL)
+//            );
 
         } else {
             Toast.makeText(this, R.string.no_location_detected, Toast.LENGTH_LONG).show();
@@ -271,8 +279,15 @@ public class MainActivity extends ActionBarActivity implements
         mapReady = true;
         m_map = map;
 
+        Integer i;
+
+        //ClassicSingleton CS= new ClassicSingleton();
+        //CS.getInstance();
+
+        Log.e(TAG, "CS.stations=" + CS.stations);
+
 //        m_map.addMarker(last);
-        m_map.addMarker(home);
+                m_map.addMarker(home);
         m_map.addMarker(oldHome);
         m_map.addMarker(building101);
         m_map.addMarker(trueYoga);
@@ -281,17 +296,31 @@ public class MainActivity extends ActionBarActivity implements
 
 
 
+        for (i = 0; i < CS.stations; i++) {
+            Log.e(TAG, (i + 1) + "<" + CS.Name().get(i) + "><" + CS.Address().get(i) + ">(" + CS.Latitude().get(i) + CS.Longitude().get(i) + ")");
+
+            station = new MarkerOptions()
+                    .position(new LatLng(CS.Latitude().get(i), CS.Longitude().get(i)))
+                    .title(CS.Name().get(i))
+                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
+
+            m_map.addMarker(station);
+        }
+
+
+
         map.moveCamera(CameraUpdateFactory.newCameraPosition(NEWYORK));
 
-        map.addPolyline(new PolylineOptions().geodesic(true)
+//        map.addPolyline(new PolylineOptions().geodesic(true)
 //                        .add(lastLL)
-                .add(homeLL)
+//                .add(homeLL)
 //                        .add(oldHomeLL)
 //                        .add(homeTomLL)
-                .add(taishinBankLL)
-                .add(trueYogaLL)
-                .add(homeLL)
-        );
+//                .add(taishinBankLL)
+//                .add(trueYogaLL)
+//                .add(homeLL)
+//        );
+
                 //map.addPolygon(new PolygonOptions().add(homeLL, oldHomeLL, trueYogaLL, homeLL).fillColor(Color.GREEN));
 
                 //map.addCircle(new CircleOptions()

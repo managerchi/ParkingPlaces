@@ -2,7 +2,16 @@
 
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
-    <item android:id="@+id/action_refresh"
-        android:title="@string/action_refresh"
+    <item
+        android:id="@+id/action_24TPS"
+        android:title="@string/action_24TPS"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_DoDoHome"
+        android:title="@string/action_DoDoHome"
+        app:showAsAction="never" />
+    <item
+        android:id="@+id/action_TaiwanParking"
+        android:title="@string/action_TaiwanParking"
         app:showAsAction="never" />
 </menu>
