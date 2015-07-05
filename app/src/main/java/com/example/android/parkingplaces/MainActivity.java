@@ -215,9 +215,9 @@ public class MainActivity extends ActionBarActivity implements
             Integer i;
 
 
-            for (i = 0; i < CS.stations; i++) {
-                Log.e(TAG, (i+1)+"<"+CS.Name().get(i)+"><"+CS.Address().get(i)+">("+CS.Latitude().get(i)+CS.Longitude().get(i)+")");
-            }
+            //for (i = 0; i < CS.stations; i++) {
+            //    Log.e(TAG, (i+1)+"<"+CS.Name().get(i)+"><"+CS.Address().get(i)+">("+CS.Latitude().get(i)+","+CS.Longitude().get(i)+")");
+            //}
 
 
 //            m_map.addPolyline(new PolylineOptions().geodesic(true)
@@ -286,6 +286,8 @@ public class MainActivity extends ActionBarActivity implements
 
         Log.e(TAG, "CS.stations=" + CS.stations);
 
+        m_map.clear();
+
 //        m_map.addMarker(last);
                 m_map.addMarker(home);
         m_map.addMarker(oldHome);
@@ -297,7 +299,7 @@ public class MainActivity extends ActionBarActivity implements
 
 
         for (i = 0; i < CS.stations; i++) {
-            Log.e(TAG, (i + 1) + "<" + CS.Name().get(i) + "><" + CS.Address().get(i) + ">(" + CS.Latitude().get(i) + CS.Longitude().get(i) + ")");
+            Log.e(TAG, (i + 1) + "<" + CS.Name().get(i) + "><" + CS.Address().get(i) + ">(" + CS.Latitude().get(i) +","+ CS.Longitude().get(i) + ")");
 
             station = new MarkerOptions()
                     .position(new LatLng(CS.Latitude().get(i), CS.Longitude().get(i)))
@@ -309,7 +311,7 @@ public class MainActivity extends ActionBarActivity implements
 
 
 
-        map.moveCamera(CameraUpdateFactory.newCameraPosition(NEWYORK));
+        //map.moveCamera(CameraUpdateFactory.newCameraPosition(NEWYORK));
 
 //        map.addPolyline(new PolylineOptions().geodesic(true)
 //                        .add(lastLL)

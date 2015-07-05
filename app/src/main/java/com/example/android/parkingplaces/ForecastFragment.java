@@ -86,19 +86,18 @@ public class ForecastFragment extends Fragment {
         if (id == R.id.action_24TPS) {
             FetchWeatherTask weatherTask = new FetchWeatherTask();
             weatherTask.execute("https://dl.dropboxusercontent.com/u/46823822/24TPS.json");
-            //return true;
+            return true;
         }
         else if (id == R.id.action_DoDoHome) {
             FetchWeatherTask weatherTask = new FetchWeatherTask();
             weatherTask.execute("https://dl.dropboxusercontent.com/u/46823822/DoDoHome.json");
-            //return true;
+            return true;
         }
         else if (id == R.id.action_TaiwanParking) {
             FetchWeatherTask weatherTask = new FetchWeatherTask();
             weatherTask.execute("https://dl.dropboxusercontent.com/u/46823822/TaiwanParking.json");
-           // return true;
+            return true;
         }
-
 
         CameraPosition LAST = CameraPosition.builder()
                 .target(new LatLng(MainActivity.latitude, MainActivity.longitude))
