@@ -104,11 +104,19 @@ public class MainActivity extends ActionBarActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        if (savedInstanceState == null) {
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.container, new ForecastFragment())
+                    .commit();
+        }
 
         //mLatitudeText = (TextView) findViewById((R.id.latitude_text));
         //mLongitudeText = (TextView) findViewById((R.id.longitude_text));
 
         buildGoogleApiClient();
+
+
+
 
 
         home = new MarkerOptions()
