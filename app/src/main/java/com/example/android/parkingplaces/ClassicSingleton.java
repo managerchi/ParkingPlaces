@@ -18,42 +18,27 @@ public class ClassicSingleton {
     protected ClassicSingleton() {
         // Exists only to defeat instantiation.
     }
+
     public static ClassicSingleton getInstance() {
-        if(instance == null) {
+        if (instance == null) {
             instance = new ClassicSingleton();
         }
         return instance;
     }
 
     public ArrayList<String> Name() {
-        //name.add("Android");
-        //name.add("IPhone");
-        //name.add("Windows");
-
         return name;
     }
 
     public ArrayList<String> Address() {
-        //name.add("Android");
-        //name.add("IPhone");
-        //name.add("Windows");
-
         return address;
     }
 
     public ArrayList<Double> Latitude() {
-        //name.add("Android");
-        //name.add("IPhone");
-        //name.add("Windows");
-
         return latitude;
     }
 
     public ArrayList<Double> Longitude() {
-        //name.add("Android");
-        //name.add("IPhone");
-        //name.add("Windows");
-
         return longitude;
     }
 

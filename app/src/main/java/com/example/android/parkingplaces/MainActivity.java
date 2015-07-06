@@ -161,14 +161,17 @@ public class MainActivity extends ActionBarActivity implements
         if (id == R.id.action_24TPS &&
                 (CS.company.equals("24TPS"))) {
 
+            addMarkersToMap();
             return true;
         } else if (id == R.id.action_DoDoHome &&
                 (CS.company.equals("DoDoHome"))) {
 
+            addMarkersToMap();
             return true;
         } else if (id == R.id.action_TaiwanParking &&
                 (CS.company.equals("TaiwanParking"))) {
 
+            addMarkersToMap();
             return true;
         }
 
