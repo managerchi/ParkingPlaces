@@ -9,6 +9,7 @@ public class ClassicSingleton {
     private static ClassicSingleton instance = null;
 
     public Integer stations = 0;
+    public String company = "";
     public ArrayList<String> name = new ArrayList<String>();
     public ArrayList<String> address = new ArrayList<String>();
     public ArrayList<Double> latitude = new ArrayList<Double>();

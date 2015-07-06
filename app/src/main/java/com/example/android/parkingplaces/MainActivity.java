@@ -1,10 +1,15 @@
 package com.example.android.parkingplaces;
 
+import android.app.ActionBar;
 import android.location.Location;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,15 +34,28 @@ import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.location.LocationServices;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.text.SimpleDateFormat;
+
 
 
 public class MainActivity extends ActionBarActivity implements
+//public class MainActivity extends Fragment implements
         OnMapReadyCallback,
         ConnectionCallbacks,
         OnConnectionFailedListener {
 
 
-    private final String TAG = MainActivity.class.getSimpleName();
+    private static final String TAG = MainActivity.class.getSimpleName();
 
     /**
      * Provides the entry point to Google Play services.
@@ -67,7 +85,7 @@ public class MainActivity extends ActionBarActivity implements
     MarkerOptions taishinBank;
     MarkerOptions homeTom;
 
-    MarkerOptions station;
+    static MarkerOptions station;
 
 
     LatLng homeLL = new LatLng(24.938486, 121.503394);
@@ -76,7 +94,6 @@ public class MainActivity extends ActionBarActivity implements
     LatLng trueYogaLL = new LatLng(25.041626, 121.564047);
     LatLng taishinBankLL = new LatLng(25.037573, 121.550077);
     LatLng homeTomLL = new LatLng(25.073208, 121.469505);
-
 
 
     static public double latitude;
@@ -99,18 +116,23 @@ public class MainActivity extends ActionBarActivity implements
             .tilt(45)
             .build();
 
-    ClassicSingleton CS= new ClassicSingleton().getInstance();
+    static ClassicSingleton CS = new ClassicSingleton().getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new ForecastFragment())
-                    .commit();
-        }
+        supportInvalidateOptionsMenu();
+
+        //setHasOptionsMenu(true);
+
+
+        //if (savedInstanceState == null) {
+        //    getSupportFragmentManager().beginTransaction()
+        //           .add(R.id.container, new ForecastFragment())
+        //            .commit();
+        //}
 
         //mLatitudeText = (TextView) findViewById((R.id.latitude_text));
         //mLongitudeText = (TextView) findViewById((R.id.longitude_text));
@@ -118,39 +140,66 @@ public class MainActivity extends ActionBarActivity implements
         buildGoogleApiClient();
 
 
-
-        home = new MarkerOptions()
-                .position(new LatLng(24.938486, 121.503394))
-                .title("Home")
-                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
-
-        oldHome = new MarkerOptions()
-                .position(new LatLng(25.028104, 121.499944))
-                .title("Old Home")
-                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
-
-        building101 = new MarkerOptions()
-                .position(new LatLng(25.033720, 121.564811))
-                .title("101")
-                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
-
-        trueYoga = new MarkerOptions()
-                .position(new LatLng(25.041626, 121.564047))
-                .title("True Yoga")
-                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
-
-        taishinBank = new MarkerOptions()
-                .position(new LatLng(25.037573, 121.550077))
-                .title("Taishin Bank")
-                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
-
-        homeTom = new MarkerOptions()
-                .position(new LatLng(25.073208, 121.469505))
-                .title("Hometom")
-                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
-
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        if (id == R.id.action_24TPS &&
+                (CS.company.equals("24TPS"))) {
+
+            return true;
+        } else if (id == R.id.action_DoDoHome &&
+                (CS.company.equals("DoDoHome"))) {
+
+            return true;
+        } else if (id == R.id.action_TaiwanParking &&
+                (CS.company.equals("TaiwanParking"))) {
+
+            return true;
+        }
+
+        if (id == R.id.action_24TPS) {
+            FetchWeatherTask weatherTask = new FetchWeatherTask();
+            weatherTask.execute("https://dl.dropboxusercontent.com/u/46823822/24TPS.json");
+            CS.company = "24TPS";
+            //return true;
+        } else if (id == R.id.action_DoDoHome) {
+            FetchWeatherTask weatherTask = new FetchWeatherTask();
+            weatherTask.execute("https://dl.dropboxusercontent.com/u/46823822/DoDoHome.json");
+            CS.company = "DoDoHome";
+            //return true;
+        } else if (id == R.id.action_TaiwanParking) {
+            FetchWeatherTask weatherTask = new FetchWeatherTask();
+            weatherTask.execute("https://dl.dropboxusercontent.com/u/46823822/TaiwanParking.json");
+            CS.company = "TaiwanParking";
+            //return true;
+        }
+
+        addMarkersToMap();
+
+        CameraPosition LAST = CameraPosition.builder()
+                .target(new LatLng(latitude, longitude))
+                .zoom(12)
+                .bearing(0)
+                .tilt(90)
+                .build();
+        m_map.moveCamera(CameraUpdateFactory.newCameraPosition(LAST));
+
+        return super.onOptionsItemSelected(item);
     }
 
 
@@ -197,15 +246,16 @@ public class MainActivity extends ActionBarActivity implements
 
             CameraPosition LAST = CameraPosition.builder()
                     .target(new LatLng(latitude, longitude))
-                    .zoom(11)
+                    .zoom(12)
                     .bearing(0)
                     .tilt(90)
                     .build();
+
             m_map.moveCamera(CameraUpdateFactory.newCameraPosition(LAST));
 
             last = new MarkerOptions()
                     .position(new LatLng(latitude, longitude))
-                    .title("Home")
+                    .title("Current Location")
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher));
 
             m_map.addMarker(last);
@@ -251,29 +301,6 @@ public class MainActivity extends ActionBarActivity implements
         mGoogleApiClient.connect();
     }
 
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
     @Override
     public void onMapReady(GoogleMap map) {
         mapReady = true;
@@ -284,32 +311,14 @@ public class MainActivity extends ActionBarActivity implements
         //ClassicSingleton CS= new ClassicSingleton();
         //CS.getInstance();
 
-        Log.e(TAG, "CS.stations=" + CS.stations);
 
-        m_map.clear();
-
-//        m_map.addMarker(last);
-                m_map.addMarker(home);
-        m_map.addMarker(oldHome);
-        m_map.addMarker(building101);
-        m_map.addMarker(trueYoga);
-        m_map.addMarker(taishinBank);
-        m_map.addMarker(homeTom);
+        //m_map.addMarker(last);
 
 
-
-        for (i = 0; i < CS.stations; i++) {
-            Log.e(TAG, (i + 1) + "<" + CS.Name().get(i) + "><" + CS.Address().get(i) + ">(" + CS.Latitude().get(i) +","+ CS.Longitude().get(i) + ")");
-
-            station = new MarkerOptions()
-                    .position(new LatLng(CS.Latitude().get(i), CS.Longitude().get(i)))
-                    .title(CS.Name().get(i))
-                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
-
-            m_map.addMarker(station);
-        }
+        Log.e("onMapReady", "CS.stations=" + CS.stations);
 
 
+        addMarkersToMap();
 
         //map.moveCamera(CameraUpdateFactory.newCameraPosition(NEWYORK));
 
@@ -323,14 +332,284 @@ public class MainActivity extends ActionBarActivity implements
 //                .add(homeLL)
 //        );
 
-                //map.addPolygon(new PolygonOptions().add(homeLL, oldHomeLL, trueYogaLL, homeLL).fillColor(Color.GREEN));
+        //map.addPolygon(new PolygonOptions().add(homeLL, oldHomeLL, trueYogaLL, homeLL).fillColor(Color.GREEN));
 
-                //map.addCircle(new CircleOptions()
-                //.center(homeLL)
-                //.radius(5000)
-                //.strokeColor(Color.GREEN)
-                //.fillColor(Color.argb(64,0,255,0)));
+        //map.addCircle(new CircleOptions()
+        //.center(homeLL)
+        //.radius(5000)
+        //.strokeColor(Color.GREEN)
+        //.fillColor(Color.argb(64,0,255,0)));
 
+    }
+
+    private boolean checkReady() {
+        if (m_map == null) {
+            Toast.makeText(this, R.string.map_not_ready, Toast.LENGTH_SHORT).show();
+            return false;
+        }
+        return true;
+    }
+
+    private void addPersonalMarkersToMap() {
+
+        home = new MarkerOptions()
+                .position(new LatLng(24.938486, 121.503394))
+                .title("Home")
+                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
+
+        oldHome = new MarkerOptions()
+                .position(new LatLng(25.028104, 121.499944))
+                .title("Old Home")
+                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
+
+        building101 = new MarkerOptions()
+                .position(new LatLng(25.033720, 121.564811))
+                .title("101")
+                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
+
+        trueYoga = new MarkerOptions()
+                .position(new LatLng(25.041626, 121.564047))
+                .title("True Yoga")
+                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
+
+        taishinBank = new MarkerOptions()
+                .position(new LatLng(25.037573, 121.550077))
+                .title("Taishin Bank")
+                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
+
+        homeTom = new MarkerOptions()
+                .position(new LatLng(25.073208, 121.469505))
+                .title("Hometom")
+                .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
+
+        m_map.addMarker(home);
+        m_map.addMarker(oldHome);
+        m_map.addMarker(building101);
+        m_map.addMarker(trueYoga);
+        m_map.addMarker(taishinBank);
+        m_map.addMarker(homeTom);
+    }
+
+    public void addMarkersToMap() {
+        Integer i;
+
+        m_map.clear();
+
+        for (i = 0; i < CS.stations; i++) {
+            Log.e("addMarkersToMap", (i + 1) + "<" + CS.Name().get(i) + "><" + CS.Address().get(i) + ">(" + CS.Latitude().get(i) + "," + CS.Longitude().get(i) + ")");
+
+            station = new MarkerOptions()
+                    .position(new LatLng(CS.Latitude().get(i), CS.Longitude().get(i)))
+                    .title(CS.Name().get(i))
+                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
+
+            m_map.addMarker(station);
+        }
+
+        last = new MarkerOptions()
+                .position(new LatLng(latitude, longitude))
+                .title("Current Location")
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher));
+
+        m_map.addMarker(last);
+    }
+
+
+
+
+    public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
+
+        private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
+
+        /* The date/time conversion code is going to be moved outside the asynctask later,
+         * so for convenience we're breaking it out into its own method now.
+         */
+        private String getReadableDateString(long time) {
+            // Because the API returns a unix timestamp (measured in seconds),
+            // it must be converted to milliseconds in order to be converted to valid date.
+            SimpleDateFormat shortenedDateFormat = new SimpleDateFormat("EEE MMM dd");
+            return shortenedDateFormat.format(time);
+        }
+
+        /**
+         * Prepare the weather high/lows for presentation.
+         */
+        private String formatHighLows(double high, double low) {
+            // For presentation, assume the user doesn't care about tenths of a degree.
+            long roundedHigh = Math.round(high);
+            long roundedLow = Math.round(low);
+
+            String highLowStr = roundedHigh + "/" + roundedLow;
+            return highLowStr;
+        }
+
+        /**
+         * Take the String representing the complete forecast in JSON Format and
+         * pull out the data we need to construct the Strings needed for the wireframes.
+         * <p/>
+         * Fortunately parsing is easy:  constructor takes the JSON string and converts it
+         * into an Object hierarchy for us.
+         */
+        private String[] getWeatherDataFromJson(String companyJsonStr)
+                throws JSONException {
+
+            String[] resultStrs = new String[1000];
+            // These are the names of the JSON objects that need to be extracted.
+            final String NAME = "name";
+            final String ADDRESS = "address";
+            final String LATITUDE = "latitude";
+            final String LONGITUDE = "longitude";
+            final String STATIONS = "stations";
+            Integer i;
+
+            Log.e("getWeatherDataFromJson", companyJsonStr);
+
+            //ClassicSingleton CS= new ClassicSingleton().getInstance();
+            CS.stations = 0;
+            CS.name.clear();
+            CS.address.clear();
+            CS.latitude.clear();
+            CS.longitude.clear();
+
+            JSONObject stationsJson = new JSONObject(companyJsonStr);
+            JSONArray stationArray = stationsJson.getJSONArray(STATIONS);
+
+            for (i = 0; i < stationArray.length(); i++) {
+                JSONObject stationJson = stationArray.getJSONObject(i);
+                String name = stationJson.getString(NAME);
+                String address = stationJson.getString(ADDRESS);
+                double latitude = stationJson.getDouble(LATITUDE);
+                double longitude = stationJson.getDouble(LONGITUDE);
+
+                if (latitude != 0.0 &&
+                        longitude != 0.0) {
+                    CS.name.add(name);
+                    CS.address.add(address);
+                    CS.latitude.add(latitude);
+                    CS.longitude.add(longitude);
+
+                    CS.stations++;
+                }
+
+                resultStrs[i] = (i + 1) + "<" + name + "><" + address + ">(" + latitude + "," + longitude + ")";
+                Log.e("getWeatherDataFromJson", resultStrs[i]);
+            } // i
+
+            Log.e("getWeatherDataFromJson", "CS.stations=" + CS.stations);
+
+            //for (String s : resultStrs) {
+            //    Log.e(LOG_TAG, "Station: " + s);
+            //}
+
+
+            return resultStrs;
+
+        }
+
+        @Override
+        protected String[] doInBackground(String... params) {
+
+            // If there's no zip code, there's nothing to look up.  Verify size of params.
+            if (params.length == 0) {
+                return null;
+            }
+
+            // These two need to be declared outside the try/catch
+            // so that they can be closed in the finally block.
+            HttpURLConnection urlConnection = null;
+            BufferedReader reader = null;
+
+            // Will contain the raw JSON response as a string.
+            String forecastJsonStr = null;
+
+            String format = "json";
+            String units = "metric";
+            int numDays = 7;
+
+            try {
+                // Construct the URL for the OpenWeatherMap query
+                // Possible parameters are avaiable at OWM's forecast API page, at
+                // http://openweathermap.org/API#forecast
+                final String FORECAST_BASE_URL =
+                        "http://api.openweathermap.org/data/2.5/forecast/daily?";
+                final String QUERY_PARAM = "q";
+                final String FORMAT_PARAM = "mode";
+                final String UNITS_PARAM = "units";
+                final String DAYS_PARAM = "cnt";
+
+                Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
+                        .appendQueryParameter(QUERY_PARAM, params[0])
+                        .appendQueryParameter(FORMAT_PARAM, format)
+                        .appendQueryParameter(UNITS_PARAM, units)
+                        .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
+                        .build();
+
+                //URL url = new URL(builtUri.toString());
+
+                //URL url = new URL("https://dl.dropboxusercontent.com/u/46823822/24TPS.json");
+                URL url = new URL(params[0]);
+
+                Log.v(LOG_TAG, "Built URI " + builtUri.toString());
+
+                // Create the request to OpenWeatherMap, and open the connection
+                urlConnection = (HttpURLConnection) url.openConnection();
+                urlConnection.setRequestMethod("GET");
+                urlConnection.connect();
+
+                // Read the input stream into a String
+                InputStream inputStream = urlConnection.getInputStream();
+                StringBuffer buffer = new StringBuffer();
+                if (inputStream == null) {
+                    // Nothing to do.
+                    return null;
+                }
+                reader = new BufferedReader(new InputStreamReader(inputStream));
+
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    // Since it's JSON, adding a newline isn't necessary (it won't affect parsing)
+                    // But it does make debugging a *lot* easier if you print out the completed
+                    // buffer for debugging.
+                    buffer.append(line + "\n");
+                }
+
+                if (buffer.length() == 0) {
+                    // Stream was empty.  No point in parsing.
+                    return null;
+                }
+                forecastJsonStr = buffer.toString();
+
+                Log.v(LOG_TAG, "Forecast string: " + forecastJsonStr);
+            } catch (IOException e) {
+                Log.e(LOG_TAG, "Error ", e);
+                // If the code didn't successfully get the weather data, there's no point in attemping
+                // to parse it.
+                return null;
+            } finally {
+                if (urlConnection != null) {
+                    urlConnection.disconnect();
+                }
+                if (reader != null) {
+                    try {
+                        reader.close();
+                    } catch (final IOException e) {
+                        Log.e(LOG_TAG, "Error closing stream", e);
+                    }
+                }
+            }
+
+            try {
+                return getWeatherDataFromJson(forecastJsonStr);
+
+
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, e.getMessage(), e);
+                e.printStackTrace();
+            }
+
+            // This will only happen if there was an error getting or parsing the forecast.
+            return null;
+        }
     }
 
 
