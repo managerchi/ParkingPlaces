@@ -116,12 +116,14 @@ public class MainActivity extends ActionBarActivity implements
             .tilt(45)
             .build();
 
-    static ClassicSingleton CS = new ClassicSingleton().getInstance();
+    //static ClassicSingleton CS = new ClassicSingleton().getInstance();
+    Stations stations = new Stations().getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         supportInvalidateOptionsMenu();
 
@@ -159,17 +161,17 @@ public class MainActivity extends ActionBarActivity implements
         int id = item.getItemId();
 
         if (id == R.id.action_24TPS &&
-                (CS.company.equals("24TPS"))) {
+                (stations.company.equals("24TPS"))) {
 
             addMarkersToMap();
             return true;
         } else if (id == R.id.action_DoDoHome &&
-                (CS.company.equals("DoDoHome"))) {
+                (stations.company.equals("DoDoHome"))) {
 
             addMarkersToMap();
             return true;
         } else if (id == R.id.action_TaiwanParking &&
-                (CS.company.equals("TaiwanParking"))) {
+                (stations.company.equals("TaiwanParking"))) {
 
             addMarkersToMap();
             return true;
@@ -178,17 +180,17 @@ public class MainActivity extends ActionBarActivity implements
         if (id == R.id.action_24TPS) {
             FetchWeatherTask weatherTask = new FetchWeatherTask();
             weatherTask.execute("https://dl.dropboxusercontent.com/u/46823822/24TPS.json");
-            CS.company = "24TPS";
+            stations.company = "24TPS";
             //return true;
         } else if (id == R.id.action_DoDoHome) {
             FetchWeatherTask weatherTask = new FetchWeatherTask();
             weatherTask.execute("https://dl.dropboxusercontent.com/u/46823822/DoDoHome.json");
-            CS.company = "DoDoHome";
+            stations.company = "DoDoHome";
             //return true;
         } else if (id == R.id.action_TaiwanParking) {
             FetchWeatherTask weatherTask = new FetchWeatherTask();
             weatherTask.execute("https://dl.dropboxusercontent.com/u/46823822/TaiwanParking.json");
-            CS.company = "TaiwanParking";
+            stations.company = "TaiwanParking";
             //return true;
         }
 
@@ -317,8 +319,10 @@ public class MainActivity extends ActionBarActivity implements
 
         //m_map.addMarker(last);
 
+        Stations stations = new Stations().getInstance();
 
-        Log.e("onMapReady", "CS.stations=" + CS.stations);
+        //Log.e("onMapReady", "CS.stations=" + CS.stations);
+        Log.e("onMapReady", "stations.numberOfStations=" + stations.numberOfStations);
 
 
         addMarkersToMap();
@@ -393,29 +397,6 @@ public class MainActivity extends ActionBarActivity implements
         m_map.addMarker(homeTom);
     }
 
-    public void addMarkersToMap1() {
-        Integer i;
-
-        m_map.clear();
-
-        for (i = 0; i < CS.stations; i++) {
-            Log.e("addMarkersToMap", (i + 1) + "<" + CS.Name().get(i) + "><" + CS.Address().get(i) + ">(" + CS.Latitude().get(i) + "," + CS.Longitude().get(i) + ")");
-
-            station = new MarkerOptions()
-                    .position(new LatLng(CS.Latitude().get(i), CS.Longitude().get(i)))
-                    .title(CS.Name().get(i))
-                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
-
-            m_map.addMarker(station);
-        }
-
-        last = new MarkerOptions()
-                .position(new LatLng(latitude, longitude))
-                .title("Current Location")
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher));
-
-        m_map.addMarker(last);
-    }
 
     public void addMarkersToMap() {
         Integer i;
@@ -482,68 +463,7 @@ public class MainActivity extends ActionBarActivity implements
             return highLowStr;
         }
 
-        /**
-         * Take the String representing the complete forecast in JSON Format and
-         * pull out the data we need to construct the Strings needed for the wireframes.
-         * <p/>
-         * Fortunately parsing is easy:  constructor takes the JSON string and converts it
-         * into an Object hierarchy for us.
-         */
-        private String[] getWeatherDataFromJson1(String companyJsonStr)
-                throws JSONException {
-
-            String[] resultStrs = new String[1000];
-            // These are the names of the JSON objects that need to be extracted.
-            final String NAME = "name";
-            final String ADDRESS = "address";
-            final String LATITUDE = "latitude";
-            final String LONGITUDE = "longitude";
-            final String STATIONS = "stations";
-            Integer i;
-
-            Log.e("getWeatherDataFromJson", companyJsonStr);
-
-            //ClassicSingleton CS= new ClassicSingleton().getInstance();
-            CS.stations = 0;
-            CS.name.clear();
-            CS.address.clear();
-            CS.latitude.clear();
-            CS.longitude.clear();
-
-            JSONObject stationsJson = new JSONObject(companyJsonStr);
-            JSONArray stationArray = stationsJson.getJSONArray(STATIONS);
-
-            for (i = 0; i < stationArray.length(); i++) {
-                JSONObject stationJson = stationArray.getJSONObject(i);
-                String name = stationJson.getString(NAME);
-                String address = stationJson.getString(ADDRESS);
-                double latitude = stationJson.getDouble(LATITUDE);
-                double longitude = stationJson.getDouble(LONGITUDE);
-
-                if (latitude != 0.0 &&
-                        longitude != 0.0) {
-                    CS.name.add(name);
-                    CS.address.add(address);
-                    CS.latitude.add(latitude);
-                    CS.longitude.add(longitude);
-
-                    CS.stations++;
-                }
-
-                resultStrs[i] = (i + 1) + "<" + name + "><" + address + ">(" + latitude + "," + longitude + ")";
-                Log.e("getWeatherDataFromJson", resultStrs[i]);
-            } // i
-
-            Log.e("getWeatherDataFromJson", "CS.stations=" + CS.stations);
-
-            //for (String s : resultStrs) {
-            //    Log.e(LOG_TAG, "Station: " + s);
-            //}
-
-
-            return resultStrs;
-
-        }
+        
         private String[] getWeatherDataFromJson(String companyJsonStr)
                 throws JSONException {
 
