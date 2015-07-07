@@ -393,7 +393,7 @@ public class MainActivity extends ActionBarActivity implements
         m_map.addMarker(homeTom);
     }
 
-    public void addMarkersToMap() {
+    public void addMarkersToMap1() {
         Integer i;
 
         m_map.clear();
@@ -407,6 +407,42 @@ public class MainActivity extends ActionBarActivity implements
                     .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
 
             m_map.addMarker(station);
+        }
+
+        last = new MarkerOptions()
+                .position(new LatLng(latitude, longitude))
+                .title("Current Location")
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher));
+
+        m_map.addMarker(last);
+    }
+
+    public void addMarkersToMap() {
+        Integer i;
+
+        m_map.clear();
+
+        Stations stations = new Stations().getInstance();
+        Station station = new Station();
+
+        Log.e("addMarkersToMap", "stations.numberOfStations=" + stations.numberOfStations);
+
+        for (i = 0; i < stations.numberOfStations; i++) {
+            station = stations.StationsAL().get(i);
+
+            //Log.e("addMarkersToMap", (i + 1) + "<" + CS.Name().get(i) + "><" + CS.Address().get(i) + ">(" + CS.Latitude().get(i) + "," + CS.Longitude().get(i) + ")");
+            Log.e("addMarkersToMap", (i + 1) + "<" + station.name + "><" + station.address + ">(" + station.latidude + "," + station.longitude + ")");
+
+            //station = new MarkerOptions()
+            //        .position(new LatLng(CS.Latitude().get(i), CS.Longitude().get(i)))
+            //        .title(CS.Name().get(i))
+            //        .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
+            MarkerOptions stationMO = new MarkerOptions()
+                    .position(new LatLng(station.latidude, station.longitude))
+                    .title(station.name)
+                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
+
+            m_map.addMarker(stationMO);
         }
 
         last = new MarkerOptions()
@@ -453,7 +489,7 @@ public class MainActivity extends ActionBarActivity implements
          * Fortunately parsing is easy:  constructor takes the JSON string and converts it
          * into an Object hierarchy for us.
          */
-        private String[] getWeatherDataFromJson(String companyJsonStr)
+        private String[] getWeatherDataFromJson1(String companyJsonStr)
                 throws JSONException {
 
             String[] resultStrs = new String[1000];
@@ -499,6 +535,64 @@ public class MainActivity extends ActionBarActivity implements
             } // i
 
             Log.e("getWeatherDataFromJson", "CS.stations=" + CS.stations);
+
+            //for (String s : resultStrs) {
+            //    Log.e(LOG_TAG, "Station: " + s);
+            //}
+
+
+            return resultStrs;
+
+        }
+        private String[] getWeatherDataFromJson(String companyJsonStr)
+                throws JSONException {
+
+            String[] resultStrs = new String[1000];
+            // These are the names of the JSON objects that need to be extracted.
+            final String NAME = "name";
+            final String ADDRESS = "address";
+            final String LATITUDE = "latitude";
+            final String LONGITUDE = "longitude";
+            final String STATIONS = "stations";
+            Integer i;
+
+            Log.e("getWeatherDataFromJson", companyJsonStr);
+
+            Stations stations = new Stations().getInstance();
+            stations.numberOfStations = 0;
+            stations.StationsAL().clear();
+
+
+            JSONObject stationsJson = new JSONObject(companyJsonStr);
+            JSONArray stationArray = stationsJson.getJSONArray(STATIONS);
+
+            for (i = 0; i < stationArray.length(); i++) {
+                JSONObject stationJson = stationArray.getJSONObject(i);
+                String name = stationJson.getString(NAME);
+                String address = stationJson.getString(ADDRESS);
+                double latitude = stationJson.getDouble(LATITUDE);
+                double longitude = stationJson.getDouble(LONGITUDE);
+
+                if (latitude != 0.0 &&
+                        longitude != 0.0) {
+
+                    Station station = new Station();
+                    station.name = name;
+                    station.address = address;
+                    station.latidude = latitude;
+                    station.longitude = longitude;
+
+                    stations.StationsAL().add(station);
+
+                    stations.numberOfStations++;
+                }
+
+                resultStrs[i] = (i + 1) + "<" + name + "><" + address + ">(" + latitude + "," + longitude + ")";
+                Log.e("getWeatherDataFromJson", resultStrs[i]);
+            } // i
+
+            //Log.e("getWeatherDataFromJson", "CS.stations=" + CS.stations);
+            Log.e("getWeatherDataFromJson", "stations.numberOfStations=" + stations.numberOfStations);
 
             //for (String s : resultStrs) {
             //    Log.e(LOG_TAG, "Station: " + s);
