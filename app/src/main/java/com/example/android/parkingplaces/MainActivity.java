@@ -146,12 +146,12 @@ public class MainActivity extends ActionBarActivity implements
         buildGoogleApiClient();
 
         chains.clear();
-        Stations stations = new Stations();
+        //Stations stations = new Stations();
 
 
         FetchWeatherTask weatherTask = new FetchWeatherTask();
 
-        chains.add(stations);
+        //chains.add(stations);
         //chains.get(numberOfChains).company = "24TPS";
         weatherTask.execute("https://dl.dropboxusercontent.com/u/46823822/24TPS.json", "24TPS");
         //numberOfChains++;
@@ -486,7 +486,7 @@ public class MainActivity extends ActionBarActivity implements
             Log.e("getWeatherDataFromJson", companyJsonStr);
 
             //Stations stations = new Stations().getInstance();
-            //Stations stations = new Stations();
+            Stations stations = new Stations();
 
             Log.e("getWeatherDataFromJson", "numberOfChains=" + numberOfChains);
 
@@ -494,7 +494,7 @@ public class MainActivity extends ActionBarActivity implements
             //    return resultStrs;
             //}
 
-            Stations stations = chains.get(numberOfChains);
+            //Stations stations = chains.get(numberOfChains);
 
             stations.numberOfStations = 0;
             stations.StationAL().clear();
@@ -536,8 +536,8 @@ public class MainActivity extends ActionBarActivity implements
             //}
 
             //
-            // chains.add(stations);
             stations.company = chainName;
+            chains.add(stations);
             numberOfChains++;
 
             return resultStrs;
@@ -551,6 +551,18 @@ public class MainActivity extends ActionBarActivity implements
             if (params.length == 0) {
                 return null;
             }
+
+            httpCall("https://dl.dropboxusercontent.com/u/46823822/24TPS.json", "24TPS");
+            httpCall("https://dl.dropboxusercontent.com/u/46823822/DoDoHome.json", "DoDoHome");
+            httpCall("https://dl.dropboxusercontent.com/u/46823822/TaiwanParking.json", "TaiwanParking");
+
+            // This will only happen if there was an error getting or parsing the forecast.
+            return null;
+        }
+
+        protected String[] httpCall(String urlStr, String chainName) {
+
+
 
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
@@ -576,7 +588,7 @@ public class MainActivity extends ActionBarActivity implements
                 final String DAYS_PARAM = "cnt";
 
                 Uri builtUri = Uri.parse(FORECAST_BASE_URL).buildUpon()
-                        .appendQueryParameter(QUERY_PARAM, params[0])
+                        .appendQueryParameter(QUERY_PARAM, urlStr)
                         .appendQueryParameter(FORMAT_PARAM, format)
                         .appendQueryParameter(UNITS_PARAM, units)
                         .appendQueryParameter(DAYS_PARAM, Integer.toString(numDays))
@@ -585,7 +597,7 @@ public class MainActivity extends ActionBarActivity implements
                 //URL url = new URL(builtUri.toString());
 
                 //URL url = new URL("https://dl.dropboxusercontent.com/u/46823822/24TPS.json");
-                URL url = new URL(params[0]);
+                URL url = new URL(urlStr);
 
                 Log.v(LOG_TAG, "Built URI " + builtUri.toString());
 
@@ -637,7 +649,7 @@ public class MainActivity extends ActionBarActivity implements
             }
 
             try {
-                return getWeatherDataFromJson(forecastJsonStr, params[1]);
+                return getWeatherDataFromJson(forecastJsonStr, chainName);
 
 
             } catch (JSONException e) {
@@ -648,6 +660,9 @@ public class MainActivity extends ActionBarActivity implements
             // This will only happen if there was an error getting or parsing the forecast.
             return null;
         }
+
+
+
     }
 
 
