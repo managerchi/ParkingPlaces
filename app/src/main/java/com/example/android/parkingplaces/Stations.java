@@ -8,27 +8,25 @@ import java.util.ArrayList;
 
 public class Stations {
 
-    private static Stations instance;
+    //private static Stations instance;
 
     public Integer numberOfStations = 0;
     public String company = "";
-    public ArrayList<Station> StationsAL = new ArrayList<Station>();
+    public ArrayList<Station> StationAL = new ArrayList<Station>();
 
     protected Stations() {
 
     }
 
-    public static Stations getInstance(){
+    //public static Stations getInstance(){
+    //    if(instance == null){
+    //        instance = new Stations();
+    //    }
+    //    return instance;
+    //}
 
-        if(instance == null){
-            instance = new Stations();
-        }
-
-        return instance;
-    }
-
-    public ArrayList<Station> StationsAL(){
-        return StationsAL;
+    public ArrayList<Station> StationAL(){
+        return StationAL;
     }
 }
 

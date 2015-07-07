@@ -45,7 +45,7 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
-
+import java.util.ArrayList;
 
 
 public class MainActivity extends ActionBarActivity implements
@@ -117,7 +117,11 @@ public class MainActivity extends ActionBarActivity implements
             .build();
 
     //static ClassicSingleton CS = new ClassicSingleton().getInstance();
-    Stations stations = new Stations().getInstance();
+    //Stations stations = new Stations().getInstance();
+    //Chains chains = new Chains().getInstance();
+
+    ArrayList<Stations> chains = new ArrayList<Stations>();
+    public Integer numberOfChains = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -141,6 +145,28 @@ public class MainActivity extends ActionBarActivity implements
 
         buildGoogleApiClient();
 
+        chains.clear();
+        Stations stations = new Stations();
+
+
+        FetchWeatherTask weatherTask = new FetchWeatherTask();
+
+        chains.add(stations);
+        //chains.get(numberOfChains).company = "24TPS";
+        weatherTask.execute("https://dl.dropboxusercontent.com/u/46823822/24TPS.json", "24TPS");
+        //numberOfChains++;
+
+        //FetchWeatherTask weatherTask = new FetchWeatherTask();
+        //weatherTask.execute("https://dl.dropboxusercontent.com/u/46823822/DoDoHome.json", "DoDoHome");
+        //chains.StationsAL().get(numberOfChains).company = "DoDoHome";
+        //numberOfChains++;
+
+        //FetchWeatherTask weatherTask = new FetchWeatherTask();
+        //weatherTask.execute("https://dl.dropboxusercontent.com/u/46823822/TaiwanParking.json", "TaiwanParking");
+        //chains.StationsAL().get(numberOfChains).company = "TaiwanParking";
+        //numberOfChains++;
+
+        Log.e("onCreate", "numberOfChains=" + numberOfChains);
 
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
@@ -160,41 +186,19 @@ public class MainActivity extends ActionBarActivity implements
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        if (id == R.id.action_24TPS &&
-                (stations.company.equals("24TPS"))) {
-
-            addMarkersToMap();
-            return true;
-        } else if (id == R.id.action_DoDoHome &&
-                (stations.company.equals("DoDoHome"))) {
-
-            addMarkersToMap();
-            return true;
-        } else if (id == R.id.action_TaiwanParking &&
-                (stations.company.equals("TaiwanParking"))) {
-
-            addMarkersToMap();
-            return true;
-        }
-
         if (id == R.id.action_24TPS) {
-            FetchWeatherTask weatherTask = new FetchWeatherTask();
-            weatherTask.execute("https://dl.dropboxusercontent.com/u/46823822/24TPS.json");
-            stations.company = "24TPS";
-            //return true;
-        } else if (id == R.id.action_DoDoHome) {
-            FetchWeatherTask weatherTask = new FetchWeatherTask();
-            weatherTask.execute("https://dl.dropboxusercontent.com/u/46823822/DoDoHome.json");
-            stations.company = "DoDoHome";
-            //return true;
-        } else if (id == R.id.action_TaiwanParking) {
-            FetchWeatherTask weatherTask = new FetchWeatherTask();
-            weatherTask.execute("https://dl.dropboxusercontent.com/u/46823822/TaiwanParking.json");
-            stations.company = "TaiwanParking";
-            //return true;
-        }
 
-        addMarkersToMap();
+            addMarkersToMap(0);
+            return true;
+        } else if (id == R.id.action_DoDoHome ) {
+
+            addMarkersToMap(1);
+            return true;
+        } else if (id == R.id.action_TaiwanParking) {
+
+            addMarkersToMap(2);
+            return true;
+        }
 
         CameraPosition LAST = CameraPosition.builder()
                 .target(new LatLng(latitude, longitude))
@@ -313,19 +317,16 @@ public class MainActivity extends ActionBarActivity implements
 
         Integer i;
 
-        //ClassicSingleton CS= new ClassicSingleton();
-        //CS.getInstance();
-
 
         //m_map.addMarker(last);
 
-        Stations stations = new Stations().getInstance();
+        //Stations stations = new Stations().getInstance();
 
         //Log.e("onMapReady", "CS.stations=" + CS.stations);
-        Log.e("onMapReady", "stations.numberOfStations=" + stations.numberOfStations);
+        //Log.e("onMapReady", "stations.numberOfStations=" + stations.numberOfStations);
 
 
-        addMarkersToMap();
+        addMarkersToMap(0);
 
         //map.moveCamera(CameraUpdateFactory.newCameraPosition(NEWYORK));
 
@@ -398,18 +399,24 @@ public class MainActivity extends ActionBarActivity implements
     }
 
 
-    public void addMarkersToMap() {
+    public void addMarkersToMap(Integer chain) {
         Integer i;
 
         m_map.clear();
 
-        Stations stations = new Stations().getInstance();
+        if (numberOfChains == 0) {
+            Log.e("addMarkersToMap", "no markers to add");
+            return;
+        }
+
+        //Stations stations = new Stations().getInstance();
+        Stations stations = chains.get(chain);
         Station station = new Station();
 
         Log.e("addMarkersToMap", "stations.numberOfStations=" + stations.numberOfStations);
 
         for (i = 0; i < stations.numberOfStations; i++) {
-            station = stations.StationsAL().get(i);
+            station = stations.StationAL().get(i);
 
             //Log.e("addMarkersToMap", (i + 1) + "<" + CS.Name().get(i) + "><" + CS.Address().get(i) + ">(" + CS.Latitude().get(i) + "," + CS.Longitude().get(i) + ")");
             Log.e("addMarkersToMap", (i + 1) + "<" + station.name + "><" + station.address + ">(" + station.latidude + "," + station.longitude + ")");
@@ -463,8 +470,8 @@ public class MainActivity extends ActionBarActivity implements
             return highLowStr;
         }
 
-        
-        private String[] getWeatherDataFromJson(String companyJsonStr)
+
+        private String[] getWeatherDataFromJson(String companyJsonStr, String chainName)
                 throws JSONException {
 
             String[] resultStrs = new String[1000];
@@ -478,9 +485,19 @@ public class MainActivity extends ActionBarActivity implements
 
             Log.e("getWeatherDataFromJson", companyJsonStr);
 
-            Stations stations = new Stations().getInstance();
+            //Stations stations = new Stations().getInstance();
+            //Stations stations = new Stations();
+
+            Log.e("getWeatherDataFromJson", "numberOfChains=" + numberOfChains);
+
+            //if (numberOfChains == 0) {
+            //    return resultStrs;
+            //}
+
+            Stations stations = chains.get(numberOfChains);
+
             stations.numberOfStations = 0;
-            stations.StationsAL().clear();
+            stations.StationAL().clear();
 
 
             JSONObject stationsJson = new JSONObject(companyJsonStr);
@@ -502,7 +519,7 @@ public class MainActivity extends ActionBarActivity implements
                     station.latidude = latitude;
                     station.longitude = longitude;
 
-                    stations.StationsAL().add(station);
+                    stations.StationAL().add(station);
 
                     stations.numberOfStations++;
                 }
@@ -512,12 +529,16 @@ public class MainActivity extends ActionBarActivity implements
             } // i
 
             //Log.e("getWeatherDataFromJson", "CS.stations=" + CS.stations);
-            Log.e("getWeatherDataFromJson", "stations.numberOfStations=" + stations.numberOfStations);
+            //Log.e("getWeatherDataFromJson", "stations.numberOfStations=" + stations.numberOfStations);
 
             //for (String s : resultStrs) {
             //    Log.e(LOG_TAG, "Station: " + s);
             //}
 
+            //
+            // chains.add(stations);
+            stations.company = chainName;
+            numberOfChains++;
 
             return resultStrs;
 
@@ -616,7 +637,7 @@ public class MainActivity extends ActionBarActivity implements
             }
 
             try {
-                return getWeatherDataFromJson(forecastJsonStr);
+                return getWeatherDataFromJson(forecastJsonStr, params[1]);
 
 
             } catch (JSONException e) {
