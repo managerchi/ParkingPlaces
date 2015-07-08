@@ -191,7 +191,7 @@ public class MainActivity extends ActionBarActivity implements
     public void onSaveInstanceState(Bundle savedInstanceState) {
         // Save the user's current game state
         savedInstanceState.putInt(NumberOfChains, numberOfChains);
-        //savedInstanceState.putParcelableArrayListExtra(CHAINS, (ArrayList<? extends Parcelable>) chains);
+        savedInstanceState.putParcelableArrayList(CHAINS, (ArrayList<? extends Parcelable>) chains);
 
         // Always call the superclass so it can save the view hierarchy state
         super.onSaveInstanceState(savedInstanceState);
@@ -204,7 +204,7 @@ public class MainActivity extends ActionBarActivity implements
 
         // Restore state members from saved instance
         numberOfChains = savedInstanceState.getInt(NumberOfChains);
-        //chains = savedInstanceState.getParcelableArrayListExtra(CHAINS);
+        chains = savedInstanceState.getParcelableArrayList(CHAINS);
 
         Log.e("onRestoreInstanceState", "numberOfChains=" + numberOfChains);
 
