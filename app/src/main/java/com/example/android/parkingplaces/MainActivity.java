@@ -4,6 +4,7 @@ import android.app.ActionBar;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -121,7 +122,12 @@ public class MainActivity extends ActionBarActivity implements
     //Chains chains = new Chains().getInstance();
 
     ArrayList<Stations> chains = new ArrayList<Stations>();
+    static final String CHAINS = "chains";
+
     public Integer numberOfChains = 0;
+    static final String NumberOfChains = "numberOfChains";
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -145,12 +151,20 @@ public class MainActivity extends ActionBarActivity implements
 
         buildGoogleApiClient();
 
-        chains.clear();
-        //Stations stations = new Stations();
+
+        if (savedInstanceState != null) {
+            // Restore value of members from saved state
+            numberOfChains = savedInstanceState.getInt(NumberOfChains);
+            Log.e("onCreate", "numberOfChains=" + numberOfChains);
+        } else {
+            // Probably initialize members with default values for a new instance
+            chains.clear();
+            //Stations stations = new Stations();
 
 
-        FetchWeatherTask weatherTask = new FetchWeatherTask();
-        weatherTask.execute("https://dl.dropboxusercontent.com/u/46823822/24TPS.json", "24TPS");
+            FetchWeatherTask weatherTask = new FetchWeatherTask();
+            weatherTask.execute("https://dl.dropboxusercontent.com/u/46823822/24TPS.json", "24TPS");
+        }
 
         //chains.add(stations);
         //chains.get(numberOfChains).company = "24TPS";
@@ -171,6 +185,29 @@ public class MainActivity extends ActionBarActivity implements
 
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        // Save the user's current game state
+        savedInstanceState.putInt(NumberOfChains, numberOfChains);
+        //savedInstanceState.putParcelableArrayListExtra(CHAINS, (ArrayList<? extends Parcelable>) chains);
+
+        // Always call the superclass so it can save the view hierarchy state
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onRestoreInstanceState(Bundle savedInstanceState) {
+        // Always call the superclass so it can restore the view hierarchy
+        super.onRestoreInstanceState(savedInstanceState);
+
+        // Restore state members from saved instance
+        numberOfChains = savedInstanceState.getInt(NumberOfChains);
+        //chains = savedInstanceState.getParcelableArrayListExtra(CHAINS);
+
+        Log.e("onRestoreInstanceState", "numberOfChains=" + numberOfChains);
+
     }
 
     @Override
@@ -412,12 +449,12 @@ public class MainActivity extends ActionBarActivity implements
 
         //Stations stations = new Stations().getInstance();
         Stations stations = chains.get(chain);
-        Station station = new Station();
+        //Station station = new Station();
 
         Log.e("addMarkersToMap", "stations.numberOfStations=" + stations.numberOfStations);
 
         for (i = 0; i < stations.numberOfStations; i++) {
-            station = stations.StationAL().get(i);
+            Station station = stations.StationAL().get(i);
 
             //Log.e("addMarkersToMap", (i + 1) + "<" + CS.Name().get(i) + "><" + CS.Address().get(i) + ">(" + CS.Latitude().get(i) + "," + CS.Longitude().get(i) + ")");
             Log.e("addMarkersToMap", (i + 1) + "<" + station.name + "><" + station.address + ">(" + station.latidude + "," + station.longitude + ")");
@@ -515,11 +552,11 @@ public class MainActivity extends ActionBarActivity implements
                 if (latitude != 0.0 &&
                         longitude != 0.0) {
 
-                    Station station = new Station();
-                    station.name = name;
-                    station.address = address;
-                    station.latidude = latitude;
-                    station.longitude = longitude;
+                    Station station = new Station(name, address, latitude, longitude);
+                    //station.name = name;
+                    //station.address = address;
+                    //station.latidude = latitude;
+                    //station.longitude = longitude;
 
                     stations.StationAL().add(station);
 
