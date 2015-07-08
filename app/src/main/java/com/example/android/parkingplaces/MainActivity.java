@@ -150,10 +150,11 @@ public class MainActivity extends ActionBarActivity implements
 
 
         FetchWeatherTask weatherTask = new FetchWeatherTask();
+        weatherTask.execute("https://dl.dropboxusercontent.com/u/46823822/24TPS.json", "24TPS");
 
         //chains.add(stations);
         //chains.get(numberOfChains).company = "24TPS";
-        weatherTask.execute("https://dl.dropboxusercontent.com/u/46823822/24TPS.json", "24TPS");
+        //weatherTask.execute("https://dl.dropboxusercontent.com/u/46823822/24TPS.json", "24TPS");
         //numberOfChains++;
 
         //FetchWeatherTask weatherTask = new FetchWeatherTask();
@@ -326,7 +327,7 @@ public class MainActivity extends ActionBarActivity implements
         //Log.e("onMapReady", "stations.numberOfStations=" + stations.numberOfStations);
 
 
-        addMarkersToMap(0);
+        //addMarkersToMap(0);
 
         //map.moveCamera(CameraUpdateFactory.newCameraPosition(NEWYORK));
 
@@ -428,6 +429,7 @@ public class MainActivity extends ActionBarActivity implements
             MarkerOptions stationMO = new MarkerOptions()
                     .position(new LatLng(station.latidude, station.longitude))
                     .title(station.name)
+                    .snippet(station.address)
                     .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
 
             m_map.addMarker(stationMO);
