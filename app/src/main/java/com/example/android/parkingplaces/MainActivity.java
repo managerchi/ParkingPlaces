@@ -1,6 +1,7 @@
 package com.example.android.parkingplaces;
 
 import android.app.ActionBar;
+import android.app.Activity;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -12,6 +13,8 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -52,7 +55,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 
 
-public class MainActivity extends ActionBarActivity implements
+//public class MainActivity extends ActionBarActivity implements
+public class MainActivity extends Activity implements
 //public class MainActivity extends Fragment implements
         OnMapReadyCallback,
         ConnectionCallbacks,
@@ -137,11 +141,21 @@ public class MainActivity extends ActionBarActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.activity_main);
 
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
 
-        supportInvalidateOptionsMenu();
+//        supportInvalidateOptionsMenu();
+
+/*
+        View decorView = getWindow().getDecorView();
+// Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+*/
+//        ActionBar actionBar = getActionBar();
+//        actionBar.hide();
 
         //setHasOptionsMenu(true);
 
@@ -208,6 +222,11 @@ public class MainActivity extends ActionBarActivity implements
 
         // Start loading the ad in the background.
         mAdView.loadAd(adRequest);
+
+     /*   ActionBar actionBar = getActionBar();
+//        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.hide();*/
+
     }
 
     @Override
