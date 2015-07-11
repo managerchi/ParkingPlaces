@@ -127,6 +127,8 @@ public class MainActivity extends ActionBarActivity implements
 
     public Integer numberOfChains = 0;
     static final String NumberOfChains = "numberOfChains";
+    public Integer currentChain = -1;
+    static final String CURRENT_CHAIN = "currentChain";
 
 
     @Override
@@ -154,7 +156,7 @@ public class MainActivity extends ActionBarActivity implements
 
         if (savedInstanceState != null) {
             // Restore value of members from saved state
-            numberOfChains = savedInstanceState.getInt(NumberOfChains);
+//            numberOfChains = savedInstanceState.getInt(NumberOfChains);
             Log.e("onCreate", "numberOfChains=" + numberOfChains);
         } else {
             // Probably initialize members with default values for a new instance
@@ -191,6 +193,7 @@ public class MainActivity extends ActionBarActivity implements
     public void onSaveInstanceState(Bundle savedInstanceState) {
         // Save the user's current game state
         savedInstanceState.putInt(NumberOfChains, numberOfChains);
+        savedInstanceState.putInt(CURRENT_CHAIN, currentChain);
         savedInstanceState.putParcelableArrayList(CHAINS, (ArrayList<? extends Parcelable>) chains);
 
         // Always call the superclass so it can save the view hierarchy state
@@ -204,6 +207,7 @@ public class MainActivity extends ActionBarActivity implements
 
         // Restore state members from saved instance
         numberOfChains = savedInstanceState.getInt(NumberOfChains);
+        currentChain = savedInstanceState.getInt(CURRENT_CHAIN);
         chains = savedInstanceState.getParcelableArrayList(CHAINS);
 
         Log.e("onRestoreInstanceState", "numberOfChains=" + numberOfChains);
@@ -273,6 +277,13 @@ public class MainActivity extends ActionBarActivity implements
         // applications that do not require a fine-grained location and that do not need location
         // updates. Gets the best and most recent location currently available, which may be null
         // in rare cases when a location is not available.
+
+        Log.e("onConnected", "(" + latitude + "," + longitude + ")");
+        if (currentChain >= 0) {
+            return;
+        }
+
+
         mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
         if ((mLastLocation != null) &&
                 (m_map != null)) {
@@ -347,6 +358,10 @@ public class MainActivity extends ActionBarActivity implements
 
         Integer i;
 
+        if (currentChain >= 0) {
+            
+            addMarkersToMap(currentChain);
+        }
 
         //m_map.addMarker(last);
 
@@ -446,14 +461,11 @@ public class MainActivity extends ActionBarActivity implements
 
         if (stations.company.equals("24TPS")) {
             m_icon = BitmapDescriptorFactory.fromResource(R.mipmap.tps24);
-        }
-        else if (stations.company.equals("DoDoHome")) {
+        } else if (stations.company.equals("DoDoHome")) {
             m_icon = BitmapDescriptorFactory.fromResource(R.mipmap.do_do_home);
-        }
-        else if (stations.company.equals("TaiwanParking")) {
+        } else if (stations.company.equals("TaiwanParking")) {
             m_icon = BitmapDescriptorFactory.fromResource(R.mipmap.taiwan_parking);
-        }
-        else {
+        } else {
             m_icon = BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher);
         }
 
@@ -485,6 +497,8 @@ public class MainActivity extends ActionBarActivity implements
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher));
 
         m_map.addMarker(last);
+
+        currentChain = chain;
     }
 
 
