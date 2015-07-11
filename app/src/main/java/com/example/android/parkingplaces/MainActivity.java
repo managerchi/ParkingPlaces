@@ -139,6 +139,7 @@ public class MainActivity extends ActionBarActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
 
         supportInvalidateOptionsMenu();
 
@@ -166,6 +167,7 @@ public class MainActivity extends ActionBarActivity implements
             chains.clear();
             //Stations stations = new Stations();
 
+            mapFragment.setRetainInstance(true);
 
             FetchWeatherTask weatherTask = new FetchWeatherTask();
             weatherTask.execute("https://dl.dropboxusercontent.com/u/46823822/24TPS.json", "24TPS");
@@ -191,7 +193,6 @@ public class MainActivity extends ActionBarActivity implements
 
         Log.e("onCreate", "numberOfChains=" + numberOfChains);
 
-        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
         // Gets the ad view defined in layout/ad_fragment.xml with ad unit ID set in
