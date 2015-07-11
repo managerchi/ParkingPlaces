@@ -2,6 +2,7 @@
     <string name="app_name">Parking Places</string>
     <string name="no_location_detected">No Location Detected!</string>
     <string name="map_not_ready">Google Map not ready!</string>
+    <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
 
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
