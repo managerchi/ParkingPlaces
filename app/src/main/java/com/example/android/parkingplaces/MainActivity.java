@@ -166,6 +166,9 @@ public class MainActivity extends ActionBarActivity implements
 
             FetchWeatherTask weatherTask = new FetchWeatherTask();
             weatherTask.execute("https://dl.dropboxusercontent.com/u/46823822/24TPS.json", "24TPS");
+
+            Toast.makeText(this, "Loading data...", Toast.LENGTH_LONG).show();
+
         }
 
         //chains.add(stations);
@@ -296,9 +299,9 @@ public class MainActivity extends ActionBarActivity implements
 
             CameraPosition LAST = CameraPosition.builder()
                     .target(new LatLng(latitude, longitude))
-                    .zoom(12)
+                    .zoom(14)
                     .bearing(0)
-                    .tilt(90)
+                    .tilt(0)
                     .build();
 
             m_map.moveCamera(CameraUpdateFactory.newCameraPosition(LAST));
@@ -359,7 +362,7 @@ public class MainActivity extends ActionBarActivity implements
         Integer i;
 
         if (currentChain >= 0) {
-            
+
             addMarkersToMap(currentChain);
         }
 
@@ -504,6 +507,7 @@ public class MainActivity extends ActionBarActivity implements
 
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
 
+
         private final String LOG_TAG = FetchWeatherTask.class.getSimpleName();
 
         /* The date/time conversion code is going to be moved outside the asynctask later,
@@ -614,8 +618,28 @@ public class MainActivity extends ActionBarActivity implements
             httpCall("https://dl.dropboxusercontent.com/u/46823822/DoDoHome.json", "DoDoHome");
             httpCall("https://dl.dropboxusercontent.com/u/46823822/TaiwanParking.json", "TaiwanParking");
 
+//            Toast.makeText(getApplicationContext(), "Done", Toast.LENGTH_LONG).show();
+
             // This will only happen if there was an error getting or parsing the forecast.
             return null;
+        }
+
+        @Override
+        protected void onPostExecute(String[] result) {
+            Toast.makeText(getApplicationContext(), "Done", Toast.LENGTH_LONG).show();
+            Log.e("<onPostExecute>", "Done");
+        }
+
+        @Override
+        protected void onPreExecute() {
+            Toast.makeText(getApplicationContext(), "Loading data...", Toast.LENGTH_LONG).show();
+            Log.e("<onPreExecute>", "Begin downloading...");
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {
+            Toast.makeText(getApplicationContext(), "Loading data...", Toast.LENGTH_LONG).show();
+            Log.e("<onProgressUpdate>", "Downloading...");
         }
 
         protected String[] httpCall(String urlStr, String chainName) {
