@@ -23,6 +23,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -128,7 +129,6 @@ public class MainActivity extends ActionBarActivity implements
     static final String NumberOfChains = "numberOfChains";
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -227,24 +227,16 @@ public class MainActivity extends ActionBarActivity implements
         if (id == R.id.action_24TPS) {
 
             addMarkersToMap(0);
-            return true;
-        } else if (id == R.id.action_DoDoHome ) {
+            //return true;
+        } else if (id == R.id.action_DoDoHome) {
 
             addMarkersToMap(1);
-            return true;
+            //return true;
         } else if (id == R.id.action_TaiwanParking) {
 
             addMarkersToMap(2);
-            return true;
+            //return true;
         }
-
-        CameraPosition LAST = CameraPosition.builder()
-                .target(new LatLng(latitude, longitude))
-                .zoom(12)
-                .bearing(0)
-                .tilt(90)
-                .build();
-        m_map.moveCamera(CameraUpdateFactory.newCameraPosition(LAST));
 
         return super.onOptionsItemSelected(item);
     }
@@ -439,6 +431,7 @@ public class MainActivity extends ActionBarActivity implements
 
     public void addMarkersToMap(Integer chain) {
         Integer i;
+        BitmapDescriptor m_icon;
 
         m_map.clear();
 
@@ -450,6 +443,19 @@ public class MainActivity extends ActionBarActivity implements
         //Stations stations = new Stations().getInstance();
         Stations stations = chains.get(chain);
         //Station station = new Station();
+
+        if (stations.company.equals("24TPS")) {
+            m_icon = BitmapDescriptorFactory.fromResource(R.mipmap.tps24);
+        }
+        else if (stations.company.equals("DoDoHome")) {
+            m_icon = BitmapDescriptorFactory.fromResource(R.mipmap.do_do_home);
+        }
+        else if (stations.company.equals("TaiwanParking")) {
+            m_icon = BitmapDescriptorFactory.fromResource(R.mipmap.taiwan_parking);
+        }
+        else {
+            m_icon = BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher);
+        }
 
         Log.e("addMarkersToMap", "stations.numberOfStations=" + stations.numberOfStations);
 
@@ -467,7 +473,8 @@ public class MainActivity extends ActionBarActivity implements
                     .position(new LatLng(station.latidude, station.longitude))
                     .title(station.name)
                     .snippet(station.address)
-                    .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
+                    .icon(m_icon);
+//            .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
 
             m_map.addMarker(stationMO);
         }
@@ -479,8 +486,6 @@ public class MainActivity extends ActionBarActivity implements
 
         m_map.addMarker(last);
     }
-
-
 
 
     public class FetchWeatherTask extends AsyncTask<String, Void, String[]> {
@@ -602,7 +607,6 @@ public class MainActivity extends ActionBarActivity implements
         protected String[] httpCall(String urlStr, String chainName) {
 
 
-
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
             HttpURLConnection urlConnection = null;
@@ -699,7 +703,6 @@ public class MainActivity extends ActionBarActivity implements
             // This will only happen if there was an error getting or parsing the forecast.
             return null;
         }
-
 
 
     }
