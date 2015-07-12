@@ -15,6 +15,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
+import android.widget.FrameLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -28,6 +30,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -138,6 +141,8 @@ public class MainActivity extends Activity implements
 
     private AdView mAdView;
 
+//    public MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -222,6 +227,13 @@ public class MainActivity extends Activity implements
 
         // Start loading the ad in the background.
         mAdView.loadAd(adRequest);
+
+
+        //get reference to my location icon
+        View locationButton = ((View) mapFragment.getView().findViewById(Integer.parseInt("1")).
+                getParent()).findViewById(Integer.parseInt("2"));
+
+
 
      /*   ActionBar actionBar = getActionBar();
 //        actionBar.setDisplayHomeAsUpEnabled(true);
@@ -343,16 +355,30 @@ public class MainActivity extends Activity implements
 
             m_map.moveCamera(CameraUpdateFactory.newCameraPosition(LAST));
 
-            last = new MarkerOptions()
+            /*last = new MarkerOptions()
                     .position(new LatLng(latitude, longitude))
                     .title("Current Location")
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher));
 
-            m_map.addMarker(last);
+            m_map.addMarker(last);*/
 
             lastLL = new LatLng(latitude, longitude);
 
             Integer i;
+
+
+//            View mapView = mapFragment.getView();
+//
+//            View locationButton = ((View) mapView.findViewById(1).getParent()).findViewById(2);
+//            // and next place it, on bottom right (as Google Maps app)
+//            RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams)
+//                    locationButton.getLayoutParams();
+//            // position on right bottom
+//            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
+//            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
+//            layoutParams.setMargins(0, 0, 30, 30);
+
+
 
 
             //for (i = 0; i < CS.stations; i++) {
@@ -402,6 +428,24 @@ public class MainActivity extends Activity implements
 
             addMarkersToMap(currentChain);
         }
+
+        map.setMyLocationEnabled(true);
+
+        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+        View myLocationParent = ((View) mapFragment.getView().findViewById(1).getParent());
+        View myLocationParentParent = ((View) myLocationParent.getParent());
+
+        // my position button
+
+        int positionWidth = myLocationParent.getLayoutParams().width;
+        int positionHeight = myLocationParent.getLayoutParams().height;
+
+        // lay out position button
+        FrameLayout.LayoutParams positionParams = new FrameLayout.LayoutParams(
+                positionWidth, positionHeight);
+        positionParams.setMargins(0, 100, 0, 0);
+
+        myLocationParent.setLayoutParams(positionParams);
 
         //m_map.addMarker(last);
 
@@ -531,12 +575,12 @@ public class MainActivity extends Activity implements
             m_map.addMarker(stationMO);
         }
 
-        last = new MarkerOptions()
+       /* last = new MarkerOptions()
                 .position(new LatLng(latitude, longitude))
                 .title("Current Location")
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher));
 
-        m_map.addMarker(last);
+        m_map.addMarker(last);*/
 
         currentChain = chain;
     }
