@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="ga_trackingId">UA-65052009-1</string>
+    <bool name="ga_autoActivityTracking">true</bool>
+    <screenName name="com.example.android.dinnerapp.MainActivity">
+        Main screen
+    </screenName>
+
+</resources>
