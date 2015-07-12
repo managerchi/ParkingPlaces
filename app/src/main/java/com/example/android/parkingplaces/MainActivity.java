@@ -6,6 +6,7 @@ import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Parcelable;
+import android.service.carrier.CarrierMessagingService;
 import android.support.v4.app.Fragment;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import com.google.android.gms.ads.AdView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesClient;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -44,6 +46,14 @@ import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
 import com.google.android.gms.location.LocationServices;
 
+import com.google.android.gms.common.api.PendingResult;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.tagmanager.ContainerHolder;
+import com.google.android.gms.tagmanager.DataLayer;
+import com.google.android.gms.tagmanager.TagManager;
+
+import java.util.concurrent.TimeUnit;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -56,6 +66,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.concurrent.TimeUnit;
 
 
 //public class MainActivity extends ActionBarActivity implements
@@ -140,6 +151,7 @@ public class MainActivity extends Activity implements
     static final String CURRENT_CHAIN = "currentChain";
 
     private AdView mAdView;
+    TagManager mTagManager;
 
 //    public MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
 
@@ -234,12 +246,55 @@ public class MainActivity extends Activity implements
                 getParent()).findViewById(Integer.parseInt("2"));
 
 
+// Make sure that Analytics tracking has started
+        ((MyApplication) getApplication()).startTracking();
+
+        // Load the TagManager container
+        loadGTMContainer();
 
      /*   ActionBar actionBar = getActionBar();
 //        actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.hide();*/
 
     }
+
+    // Load a TagManager container
+    public void loadGTMContainer () {
+        // TODO Get the TagManager
+        mTagManager = ((MyApplication) getApplication()).getTagManager();
+
+        // Enable verbose logging
+        mTagManager.setVerboseLoggingEnabled(true);
+
+        // Load the container
+        PendingResult pending =
+                mTagManager.loadContainerPreferFresh("GTM-123456",
+                        R.raw.gtm_analytics);
+
+        // Define the callback to store the loaded container
+        pending.setResultCallback(new ResultCallback<ContainerHolder>() {
+            @Override
+            public void onResult(ContainerHolder containerHolder) {
+
+                // If unsuccessful, return
+                if (!containerHolder.getStatus().isSuccess()) {
+                    // Deal with failure
+                    return;
+                }
+
+                // Manually refresh the container holder
+                // Can only do this once every 15 minutes or so
+                containerHolder.refresh();
+
+                // Set the container holder, only want one per running app
+                // We can retrieve it later as needed
+                ((MyApplication) getApplication()).setContainerHolder(
+                        containerHolder);
+
+            }
+        }, 2, TimeUnit.SECONDS);
+    }
+
 
     @Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
