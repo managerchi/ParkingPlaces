@@ -426,7 +426,7 @@ public class MainActivity extends Activity implements
 
         if (currentChain >= 0) {
 
-            addMarkersToMap(currentChain);
+//            addMarkersToMap(currentChain);
         }
 
         map.setMyLocationEnabled(true);
