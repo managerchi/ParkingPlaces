@@ -203,7 +203,7 @@ public class MainActivity extends Activity implements
             FetchWeatherTask weatherTask = new FetchWeatherTask();
             weatherTask.execute("https://dl.dropboxusercontent.com/u/46823822/24TPS.json", "24TPS");
 
-            Toast.makeText(this, "Loading data...", Toast.LENGTH_LONG).show();
+//            Toast.makeText(this, "Loading data...", Toast.LENGTH_LONG).show();
 
         }
 
@@ -259,7 +259,7 @@ public class MainActivity extends Activity implements
     }
 
     // Load a TagManager container
-    public void loadGTMContainer () {
+    public void loadGTMContainer() {
         // TODO Get the TagManager
         mTagManager = ((MyApplication) getApplication()).getTagManager();
 
@@ -333,20 +333,30 @@ public class MainActivity extends Activity implements
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
         // as you specify a parent activity in AndroidManifest.xml.
+
+        int i;
         int id = item.getItemId();
 
-        if (id == R.id.action_24TPS) {
-
-            addMarkersToMap(0);
-            //return true;
-        } else if (id == R.id.action_DoDoHome) {
-
-            addMarkersToMap(1);
-            //return true;
-        } else if (id == R.id.action_TaiwanParking) {
-
-            addMarkersToMap(2);
-            //return true;
+//        if (id == R.id.action_24TPS) {
+//
+//            addMarkersToMap(0);
+//            //return true;
+//        } else if (id == R.id.action_DoDoHome) {
+//
+//            addMarkersToMap(1);
+//            //return true;
+//        } else if (id == R.id.action_TaiwanParking) {
+//
+//            addMarkersToMap(2);
+//            //return true;
+//        }
+        if (id == R.id.action_parking) {
+//            m_map.clear();
+            for (i = 0; i < numberOfChains; i++) {
+                addMarkersToMap(i);
+            }
+        } else if (id == R.id.action_clear_map) {
+            m_map.clear();
         }
 
         return super.onOptionsItemSelected(item);
@@ -386,6 +396,7 @@ public class MainActivity extends Activity implements
         // in rare cases when a location is not available.
 
         Log.e("onConnected", "(" + latitude + "," + longitude + ")");
+        Log.e("onConnected", "currentChain=" + currentChain);
         if (currentChain >= 0) {
             return;
         }
@@ -410,7 +421,7 @@ public class MainActivity extends Activity implements
 
             m_map.moveCamera(CameraUpdateFactory.newCameraPosition(LAST));
 
-            /*last = new MarkerOptions()
+           /* last = new MarkerOptions()
                     .position(new LatLng(latitude, longitude))
                     .title("Current Location")
                     .icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_launcher));
@@ -432,8 +443,6 @@ public class MainActivity extends Activity implements
 //            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_TOP, 0);
 //            layoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM, RelativeLayout.TRUE);
 //            layoutParams.setMargins(0, 0, 30, 30);
-
-
 
 
             //for (i = 0; i < CS.stations; i++) {
@@ -492,13 +501,34 @@ public class MainActivity extends Activity implements
 
         // my position button
 
+        int parentWidth = myLocationParent.getMeasuredWidth();
+        int parentHeight = myLocationParent.getMeasuredHeight();
+        int parentParentWidth = myLocationParentParent.getMeasuredWidth();
+        int parentParentHeight = myLocationParentParent.getMeasuredHeight();
+
         int positionWidth = myLocationParent.getLayoutParams().width;
         int positionHeight = myLocationParent.getLayoutParams().height;
+
+//        Log.e("onMapReady", "parent(" + parentWidth + "," + parentHeight + ")");
+//        Log.e("onMapReady", "parentParent(" + parentParentWidth + "," + parentParentHeight + ")");
+//        Log.e("onMapReady", "position(" + positionWidth + "," + positionHeight + ")");
 
         // lay out position button
         FrameLayout.LayoutParams positionParams = new FrameLayout.LayoutParams(
                 positionWidth, positionHeight);
-        positionParams.setMargins(0, 100, 0, 0);
+
+//        Log.e("onMapReady", "(" + positionWidth + "," + positionHeight + ")");
+
+        if (parentParentHeight >= parentParentWidth) {
+//            positionParams.setMargins(0, 100, 0, 0);
+            positionParams.setMargins(0, 150, 0, 0);
+
+        } else {
+            positionParams.setMargins(0, 100, 0, 0);
+        }
+
+//        LayoutParams p = new FrameLayout.LayoutParams((int)width,(int)height,0);
+//        43.		p.setMargins((int)left, (int)top, (int)right, (int)bottom);
 
         myLocationParent.setLayoutParams(positionParams);
 
@@ -587,7 +617,7 @@ public class MainActivity extends Activity implements
         Integer i;
         BitmapDescriptor m_icon;
 
-        m_map.clear();
+//        m_map.clear();
 
         if (numberOfChains == 0) {
             Log.e("addMarkersToMap", "no markers to add");
@@ -613,8 +643,7 @@ public class MainActivity extends Activity implements
         for (i = 0; i < stations.numberOfStations; i++) {
             Station station = stations.StationAL().get(i);
 
-            //Log.e("addMarkersToMap", (i + 1) + "<" + CS.Name().get(i) + "><" + CS.Address().get(i) + ">(" + CS.Latitude().get(i) + "," + CS.Longitude().get(i) + ")");
-            Log.e("addMarkersToMap", (i + 1) + "<" + station.name + "><" + station.address + ">(" + station.latidude + "," + station.longitude + ")");
+//            Log.e("addMarkersToMap", (i + 1) + "<" + station.name + "><" + station.address + ">(" + station.latidude + "," + station.longitude + ")");
 
             //station = new MarkerOptions()
             //        .position(new LatLng(CS.Latitude().get(i), CS.Longitude().get(i)))
@@ -624,6 +653,7 @@ public class MainActivity extends Activity implements
                     .position(new LatLng(station.latidude, station.longitude))
                     .title(station.name)
                     .snippet(station.address)
+                    .alpha(0.75f)
                     .icon(m_icon);
 //            .icon(BitmapDescriptorFactory.fromResource(R.mipmap.ic_launcher));
 
@@ -681,7 +711,7 @@ public class MainActivity extends Activity implements
             final String STATIONS = "stations";
             Integer i;
 
-            Log.e("getWeatherDataFromJson", companyJsonStr);
+//            Log.e("getWeatherDataFromJson", companyJsonStr);
 
             //Stations stations = new Stations().getInstance();
             Stations stations = new Stations();
@@ -723,7 +753,7 @@ public class MainActivity extends Activity implements
                 }
 
                 resultStrs[i] = (i + 1) + "<" + name + "><" + address + ">(" + latitude + "," + longitude + ")";
-                Log.e("getWeatherDataFromJson", resultStrs[i]);
+//                Log.e("getWeatherDataFromJson", resultStrs[i]);
             } // i
 
             //Log.e("getWeatherDataFromJson", "CS.stations=" + CS.stations);
@@ -762,20 +792,26 @@ public class MainActivity extends Activity implements
 
         @Override
         protected void onPostExecute(String[] result) {
-            Toast.makeText(getApplicationContext(), "Done", Toast.LENGTH_LONG).show();
-            Log.e("<onPostExecute>", "Done");
+            Integer i;
+
+            Toast.makeText(getApplicationContext(), getString(R.string.data_loaded), Toast.LENGTH_LONG).show();
+                    Log.e("<onPostExecute>", getString(R.string.data_loaded));
+
+            for (i = 0; i < numberOfChains; i++) {
+                addMarkersToMap(i);
+            }
         }
 
         @Override
         protected void onPreExecute() {
-            Toast.makeText(getApplicationContext(), "Loading data...", Toast.LENGTH_LONG).show();
-            Log.e("<onPreExecute>", "Begin downloading...");
+            Toast.makeText(getApplicationContext(), getString(R.string.loading_data), Toast.LENGTH_LONG).show();
+            Log.e("<onPreExecute>", getString(R.string.loading_data));
         }
 
         @Override
         protected void onProgressUpdate(Void... values) {
-            Toast.makeText(getApplicationContext(), "Loading data...", Toast.LENGTH_LONG).show();
-            Log.e("<onProgressUpdate>", "Downloading...");
+            Toast.makeText(getApplicationContext(), getString(R.string.loading_data), Toast.LENGTH_LONG).show();
+            Log.e("<onProgressUpdate>", getString(R.string.loading_data));
         }
 
         protected String[] httpCall(String urlStr, String chainName) {
@@ -816,7 +852,7 @@ public class MainActivity extends Activity implements
                 //URL url = new URL("https://dl.dropboxusercontent.com/u/46823822/24TPS.json");
                 URL url = new URL(urlStr);
 
-                Log.v(LOG_TAG, "Built URI " + builtUri.toString());
+//                Log.v(LOG_TAG, "Built URI " + builtUri.toString());
 
                 // Create the request to OpenWeatherMap, and open the connection
                 urlConnection = (HttpURLConnection) url.openConnection();
@@ -846,7 +882,7 @@ public class MainActivity extends Activity implements
                 }
                 forecastJsonStr = buffer.toString();
 
-                Log.v(LOG_TAG, "Forecast string: " + forecastJsonStr);
+//                Log.v(LOG_TAG, "Forecast string: " + forecastJsonStr);
             } catch (IOException e) {
                 Log.e(LOG_TAG, "Error ", e);
                 // If the code didn't successfully get the weather data, there's no point in attemping

@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name">Parking Places</string>
+    <string name="app_name">免費停車場</string>
     <string name="no_location_detected">No Location Detected!</string>
     <string name="map_not_ready">Google Map not ready!</string>
     <string name="banner_ad_unit_id">ca-app-pub-3940256099942544/6300978111</string>
@@ -9,4 +9,8 @@
     <string name="action_24TPS">永固便利停車</string>
     <string name="action_DoDoHome">嘟嘟房</string>
     <string name="action_TaiwanParking">台灣聯通</string>
+    <string name="action_clear_map">清空地圖</string>
+    <string name="action_parking">停車場</string>
+    <string name="loading_data">資料更新中...</string>
+    <string name="data_loaded">資料更新完成</string>
 </resources>

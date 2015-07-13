@@ -2,17 +2,25 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".MainActivity">
+    <!--<item-->
+        <!--android:id="@+id/action_24TPS"-->
+        <!--android:title="@string/action_24TPS"-->
+        <!--app:showAsAction="never" />-->
+    <!--<item-->
+        <!--android:id="@+id/action_DoDoHome"-->
+        <!--android:title="@string/action_DoDoHome"-->
+        <!--app:showAsAction="never" />-->
+    <!--<item-->
+        <!--android:id="@+id/action_TaiwanParking"-->
+        <!--android:title="@string/action_TaiwanParking"-->
+        <!--app:showAsAction="never" />-->
     <item
-        android:id="@+id/action_24TPS"
-        android:title="@string/action_24TPS"
+        android:id="@+id/action_clear_map"
+        android:title="@string/action_clear_map"
         app:showAsAction="never" />
     <item
-        android:id="@+id/action_DoDoHome"
-        android:title="@string/action_DoDoHome"
-        app:showAsAction="never" />
-    <item
-        android:id="@+id/action_TaiwanParking"
-        android:title="@string/action_TaiwanParking"
+        android:id="@+id/action_parking"
+        android:title="@string/action_parking"
         app:showAsAction="never" />
 
 </menu>
